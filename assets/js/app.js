@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedCountDisplay = document.getElementById('selectedCountDisplay');
     const printBtn = document.getElementById('printBtn');
     const printBtnText = document.getElementById('printBtnText');
+    const unselectAllBtn = document.getElementById('unselectAllBtn');
+    const downloadSelectedBtn = document.getElementById('downloadSelectedBtn');
 
     // Tabs
     const tabButtons = document.querySelectorAll('button[data-bs-toggle="tab"]');
@@ -92,6 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         </label>
                     </div>
                     <div class="d-flex align-items-center gap-2 ms-3 bg-light p-2 rounded">
+                        <button class="btn btn-sm btn-outline-success download-single-btn" data-path="${file.fullPath}" title="Baixar este arquivo">
+                            <i class="bi bi-download"></i>
+                        </button>
                         <label class="form-label m-0 text-uppercase text-secondary" style="font-size: 0.70rem; font-weight: 700; letter-spacing: 0.5px;">Cópias</label>
                         <input type="number" min="1" max="50" class="form-control form-control-sm text-center copy-input fw-bold" data-path="${file.fullPath}" value="${qty}" style="width: 60px;">
                     </div>
@@ -118,6 +123,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     copies[path] = val;
                 });
             });
+
+            document.querySelectorAll('.download-single-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const path = e.currentTarget.dataset.path;
+                    downloadSingleFile(path);
+                });
+            });
         }
     }
 
@@ -125,6 +137,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const count = Object.values(selected).filter(Boolean).length;
         selectedCountDisplay.textContent = `${count} arquivo(s) selecionado(s)`;
         printBtn.disabled = isPrinting || count === 0;
+        downloadSelectedBtn.disabled = isPrinting || count === 0;
+        unselectAllBtn.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+
+    unselectAllBtn.addEventListener('click', () => {
+        selected = {};
+        updateSelectedCount();
+        renderList();
+    });
+
+    downloadSelectedBtn.addEventListener('click', () => {
+        const selectedFiles = files.filter(f => selected[f.fullPath]);
+        if (selectedFiles.length === 0) return alert('Selecione pelo menos um PDF.');
+        
+        selectedFiles.forEach(file => {
+            downloadSingleFile(file.fullPath);
+        });
+    });
+
+    function downloadSingleFile(path) {
+        const link = document.createElement('a');
+        link.href = `api.php?action=file&path=${encodeURIComponent(path)}`;
+        link.download = path.split(/[\/\\]/).pop() || 'arquivo.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     async function handlePrint() {
@@ -174,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     isPrinting = false;
                     updateSelectedCount();
-                    printBtnText.textContent = 'Imprimir Selecionados';
+                    printBtnText.textContent = 'Imprimir';
                 }, 500); // pequeno delay para garantir renderização no iframe
             };
         } catch (error) {
@@ -182,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
             isPrinting = false;
             updateSelectedCount();
-            printBtnText.textContent = 'Imprimir Selecionados';
+            printBtnText.textContent = 'Imprimir';
         }
     }
 

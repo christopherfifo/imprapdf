@@ -87,14 +87,22 @@
         </div>
     </div>
 
-    <!-- Barra de Impressão -->
-    <div class="border rounded-pill p-3 d-flex flex-row justify-content-between align-items-center" id="printBar">
-        <span class="badge bg-secondary bg-opacity-10 text-dark fs-6 px-3 py-2 border rounded-pill" id="selectedCountDisplay">
-            0 arquivo(s) selecionado(s)
-        </span>
-        <button class="btn btn-primary btn-lg fw-bold px-4 shadow-sm rounded-pill" id="printBtn" disabled>
-            <i class="bi bi-printer-fill me-2"></i> <span id="printBtnText">Imprimir Selecionados</span>
-        </button>
+    <!-- Barra de Ações -->
+    <div class="border rounded-pill p-3 d-flex flex-row justify-content-between align-items-center flex-wrap gap-2" id="printBar">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-secondary bg-opacity-10 text-dark fs-6 px-3 py-2 border rounded-pill" id="selectedCountDisplay">
+                0 arquivo(s) selecionado(s)
+            </span>
+            <button class="btn btn-outline-secondary btn-sm rounded-pill" id="unselectAllBtn" style="display: none;">Desmarcar Todos</button>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-success btn-lg fw-bold px-3 shadow-sm rounded-pill" id="downloadSelectedBtn" disabled title="Baixar Selecionados">
+                <i class="bi bi-download"></i>
+            </button>
+            <button class="btn btn-primary btn-lg fw-bold px-4 shadow-sm rounded-pill" id="printBtn" disabled>
+                <i class="bi bi-printer-fill me-2"></i> <span id="printBtnText">Imprimir</span>
+            </button>
+        </div>
     </div>
 
     <iframe id="printFrame" class="d-none"></iframe>
